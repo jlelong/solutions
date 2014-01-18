@@ -16,6 +16,43 @@
 % along with this program.  If not, see <http://www.gnu.org/licenses/>. %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% This package is devoted to help writing exercises along with their
+% solutions in a single document. 
+%
+% Simply add
+%    \usepackage[solexo]
+% This package accepts two options:
+%   - nosol which means that the solutions are not included in the output
+%   file
+%   - separate to indicate that the solutions should be printed outside of
+%   the exercise text. The created document will actually contain two
+%   parts: first, the exercises and then their solutions.
+%
+% Without any options the solution to a question is put right behind the
+% question text and ends with a black triangle at the end of the line. When
+% the solution to a question ends with a dispalyed equation, we may need to
+% add \endhere at the end of the equation to make sure the black triangle
+% is not displayed on a separate line.
+%
+% Here is a typical usage
+%
+% \begin{exo}[optional title]
+% Some introducive text.
+% \begin{enumerate}
+%   \item Question 1.
+%     \solution{Solution to the previous question.}
+%   \item Question 2.
+%     \solution{Solution to the previous question.}
+% \end{enumerate}
+% Add some extra gobal information if any
+% \begin{enumerate}[resume] 
+% %% include the enumitem package to use the resume option
+%   \item Question 3.
+%     \solution{Solution to the previous question.}
+%   \item Question 4.
+%     \solution{Solution to the previous question.}
+% \end{enumerate}
+% \end{exo}
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{solexo}[31/01/2012 revision 1.0 by Jerome LELONG]
