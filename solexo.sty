@@ -1,0 +1,128 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Copyright Jérôme Lelong <jerome.lelong@gmail.com>                     %
+%                                                                       %
+% This program is free software; you can redistribute it and/or modify  %
+% it under the terms of the GNU General Public License as published by  %
+% the Free Software Foundation; either version 3 of the License, or     %
+% (at your option) any later version.                                   %
+%                                                                       %
+% This program is distributed in the hope that it will be useful,       %
+% but WITHOUT ANY WARRANTY; without even the implied warranty of        %
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         %
+% GNU General Public License for more details.                          %
+%                                                                       %
+% You should have received a copy of the GNU General Public License     %
+% along with this program.  If not, see <http://www.gnu.org/licenses/>. %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{solexo}[31/01/2012 revision 1.0 by Jerome LELONG]
+
+\newif\ifSE@nosol
+\DeclareOption{nosol}{%
+  \global\SE@nosoltrue%
+}
+
+\newif\ifSE@separatedsol
+\DeclareOption{separate}{%
+  \global\SE@separatedsoltrue%
+}
+
+\ProcessOptions
+\RequirePackage{amsthm}
+\RequirePackage{amsmath}
+
+\theoremstyle{definition}
+\newtheorem{exo}{Exercice}
+
+
+\gdef\no@end@enum{1}
+\let\exo@orig=\exo
+\let\endexo@orig=\endexo
+\def\exo{\setcounter{enumi}{0}%
+  \exo@orig}
+\def\endexo{%
+  \ifnum\arabic{enumi}=0 \gdef\no@end@enum{1}%
+  \else \gdef\no@end@enum{0}%
+  \fi%
+  \endexo@orig}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% solutions in the text
+\def\trueendhere{\leavevmode\tag*{$\blacktriangle$}%
+  \gdef\qeddone{1}}
+\long\def\truesolution#1{\let\qeddone\empty%
+\par\vskip10pt\noindent{\bf Solution.}~#1%
+  \ifx\empty\qeddone\ignorespaces\unskip\penalty9999%
+  \hbox{}\nobreak\hfill\hbox{$\blacktriangle$}\fi\par\vskip10pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% separated solutions 
+\let\solutions\@empty
+\newcounter{next@exo@c}
+\setcounter{next@exo@c}{0}
+\def\next@exo{
+  \refstepcounter{next@exo@c}
+  \vskip\baselineskip
+  {\bf \noindent Exercice \thenext@exo@c.\hspace{1ex}}}
+
+\def\true{1}
+\def\false{0}
+
+
+\long\def\separated@solution#1{%
+  \ifnum\arabic{enumi}=0
+    \ifx\@empty\solutions
+      \gdef\solutions{\next@exo #1}%
+    \else
+      \ifnum\no@end@enum=\false
+        \g@addto@macro\solutions{\end{enumerate}\next@exo #1}%
+      \else \g@addto@macro\solutions{\next@exo #1}\fi
+    \fi%
+  \else\ifnum\arabic{enumi}=1
+    \ifx\@empty\solutions
+      \gdef\solutions{\next@exo\begin{enumerate}\item #1}%
+    \else
+      \ifnum\no@end@enum=\false
+      \g@addto@macro\solutions{\end{enumerate}\next@exo\begin{enumerate}\item   #1}%
+      \else  \g@addto@macro\solutions{\next@exo\begin{enumerate}\item #1}%
+      \fi
+    \fi%
+  \else
+    \ifx\@empty\solutions
+      \gdef\solutions{\item #1}%
+    \else
+      \g@addto@macro\solutions{\item #1}%
+    \fi%
+  \fi
+  \fi
+}
+
+
+\def\fakeendhere{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ifSE@nosol%
+  \long\def\solution#1{}
+\else%
+  \ifSE@separatedsol
+    \def\endhere{\fakeendhere}
+    \long\def\solution#1{\separated@solution{#1}}
+    \AtEndDocument{%
+    {\bf \noindent Corrigé.}
+    \solutions
+    \ifnum\no@end@enum=\false\end{enumerate}\fi}
+  \else%
+    \def\endhere{\trueendhere}
+    \long\def\solution#1{\truesolution{#1}}
+  \fi%
+\fi%
+
+\endinput
+
+%%
+%% End of file `solexo.sty'.
