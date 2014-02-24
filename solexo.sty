@@ -21,12 +21,15 @@
 %
 % Simply add
 %    \usepackage[solexo]
-% This package accepts two options:
+% This package accepts three options:
 %   - nosol which means that the solutions are not included in the output
 %   file
 %   - separate to indicate that the solutions should be printed outside of
 %   the exercise text. The created document will actually contain two
 %   parts: first, the exercises and then their solutions.
+%   - after to print the solution of an exercise right after its text. This
+%   produces a mixed document where exercise texts and their solutions
+%   alternate.
 %
 % Without any options the solution to a question is put right behind the
 % question text and ends with a black triangle at the end of the line. When
@@ -55,7 +58,7 @@
 % \end{exo}
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{solexo}[31/01/2012 revision 1.0 by Jerome LELONG]
+\ProvidesPackage{solexo}[24/02/2014 revision 1.1rc by Jerome LELONG]
 
 \newif\ifSE@nosol
 \DeclareOption{nosol}{%
@@ -65,6 +68,11 @@
 \newif\ifSE@separatedsol
 \DeclareOption{separate}{%
   \global\SE@separatedsoltrue%
+}
+
+\newif\ifSE@afterexo
+\DeclareOption{after}{%
+  \global\SE@afterexotrue%
 }
 
 \ProcessOptions
@@ -105,7 +113,7 @@
 \def\next@exo{
   \refstepcounter{next@exo@c}
   \vskip\baselineskip
-  {\bf \noindent Exercice \thenext@exo@c.\hspace{1ex}}}
+  {\bf \noindent Corrigé de l'exercice \thenext@exo@c.\hspace{1ex}}}
 
 \def\true{1}
 \def\false{0}
@@ -150,9 +158,17 @@
     \def\endhere{\fakeendhere}
     \long\def\solution#1{\separated@solution{#1}}
     \AtEndDocument{%
-    {\bf \noindent Corrigé.}
+    {\bf \noindent Solutions.}
     \solutions
     \ifnum\no@end@enum=\false\end{enumerate}\fi}
+  \else \ifSE@afterexo
+    \def\endhere{\fakeendhere}
+    \long\def\solution#1{\separated@solution{#1}}
+    \let\endexo@@orig\endexo
+    \long\def\endexo{\endexo@@orig
+      \solutions
+      \ifnum\no@end@enum=\false\end{enumerate}\fi
+      \gdef\solutions{}}
   \else%
     \def\endhere{\trueendhere}
     \long\def\solution#1{\truesolution{#1}}
