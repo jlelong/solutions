@@ -75,107 +75,138 @@
   \global\SE@afterexotrue%
 }
 
+\newif\ifSE@questions
+\DeclareOption{questions}{%
+  \global\SE@questionstrue
+}
+
 \ProcessOptions
 \RequirePackage{amsthm}
 \RequirePackage{amsmath}
+\RequirePackage{trace}
 
 \theoremstyle{definition}
 \newtheorem{exo}{Exercice}
 
-
-\gdef\no@end@enum{1}
-\let\exo@orig=\exo
-\let\endexo@orig=\endexo
-\def\exo{\setcounter{enumi}{0}%
-  \exo@orig}
-\def\endexo{%
-  \ifnum\arabic{enumi}=0 \gdef\no@end@enum{1}%
-  \else \gdef\no@end@enum{0}%
-  \fi%
-  \endexo@orig}
+\let\@exoOrig=\exo
+\let\@endexoOrig=\endexo
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%% solutions in the text
-\def\trueendhere{\leavevmode\tag*{$\blacktriangle$}%
-  \gdef\qeddone{1}}
-\long\def\truesolution#1{\let\qeddone\empty%
-\par\vskip10pt\noindent{\bf Solution.}~#1%
-  \ifx\empty\qeddone\ignorespaces\unskip\penalty9999%
-  \hbox{}\nobreak\hfill\hbox{$\blacktriangle$}\fi\par\vskip10pt}
-
+% Solutions in the text
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%% separated solutions 
-\let\solutions\@empty
-\newcounter{next@exo@c}
-\setcounter{next@exo@c}{0}
-\def\next@exo{
-  \refstepcounter{next@exo@c}
-  \vskip\baselineskip
-  {\bf \noindent Corrigé de l'exercice \thenext@exo@c.\hspace{1ex}}}
-
-\def\true{1}
-\def\false{0}
-
-
-\long\def\separated@solution#1{%
-  \ifnum\arabic{enumi}=0
-    \ifx\@empty\solutions
-      \gdef\solutions{\next@exo #1}%
-    \else
-      \ifnum\no@end@enum=\false
-        \g@addto@macro\solutions{\end{enumerate}\next@exo #1}%
-      \else \g@addto@macro\solutions{\next@exo #1}\fi
-    \fi%
-  \else\ifnum\arabic{enumi}=1
-    \ifx\@empty\solutions
-      \gdef\solutions{\next@exo\begin{enumerate}\item #1}%
-    \else
-      \ifnum\no@end@enum=\false
-      \g@addto@macro\solutions{\end{enumerate}\next@exo\begin{enumerate}\item   #1}%
-      \else  \g@addto@macro\solutions{\next@exo\begin{enumerate}\item #1}%
-      \fi
-    \fi%
+\def\trueendhere{%
+  \leavevmode\tag*{$\blacktriangle$}%
+  \let\ifqeddone\iftrue
+}
+\long\def\truesolution#1{
+  \let\ifqeddone\iffalse
+  \par\vskip10pt\noindent{\bf Solution.}~#1%
+  \ifqeddone
   \else
-    \ifx\@empty\solutions
-      \gdef\solutions{\item #1}%
-    \else
-      \g@addto@macro\solutions{\item #1}%
-    \fi%
+    \ignorespaces\unskip\penalty9999%
+    \hbox{}\nobreak\hfill\hbox{$\blacktriangle$}
   \fi
-  \fi
+  \par\vskip10pt
 }
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% Separated solutions 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\gdef\solutions{}
 \def\fakeendhere{}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newif\ifStartEnum
+\newif\ifEndEnum
+\StartEnumfalse
+\EndEnumfalse
+
+\def\@exoSeparateSol{%
+  \StartEnumfalse
+  \EndEnumfalse
+  \@exoOrig%
+  \g@addto@macro\solutions{%
+    \vskip\baselineskip
+    {\bf \noexpand\noindent Corrigé de l'exercice }
+  }
+  % Make sure \theexo is expanded rightaway
+  \edef\currentexo{{\noexpand\bf \theexo. \noexpand\hspace{1ex}}}
+  \expandafter\g@addto@macro\expandafter\solutions\expandafter{%
+    \currentexo%
+  }
+}
+\def\@endexoSeparateSol{
+  \@endexoOrig
+}
+
+\def\@exoAfterSol{
+  \@exoOrig
+  \StartEnumfalse
+  \EndEnumfalse
+  \gdef\solutions{}
+  \g@addto@macro\solutions{
+    \vskip\baselineskip
+    {\bf \noindent Corrigé de l'exercice \theexo.\hspace{1ex}}
+  }
+}
+\def\@endexoAfterSol{
+  \@endexoOrig
+  \solutions
+}
+
+\let\@enumerateOrig\enumerate
+\let\end@enumerateOrig\endenumerate
+\newenvironment{questions}[1][]
+  {\@enumerateOrig{#1} \StartEnumtrue}
+  {\end@enumerateOrig\g@addto@macro\solutions{\end{@enumerateOrig}}}
+
+
+\long\def\@SeparatedSolution#1{
+  \ifStartEnum
+    \g@addto@macro\solutions{\begin{@enumerateOrig}}
+    \EndEnumtrue
+  \fi
+  \ifEndEnum
+    \g@addto@macro\solutions{\item #1}
+  \else
+    \g@addto@macro\solutions{#1}
+  \fi
+  \StartEnumfalse
+}
 
 \ifSE@nosol%
-  \long\def\solution#1{}
+  \long\def\@Solution#1{}
 \else%
   \ifSE@separatedsol
     \def\endhere{\fakeendhere}
-    \long\def\solution#1{\separated@solution{#1}}
+    \long\def\@Solution#1{\@SeparatedSolution{#1}}
+    \let\exo\@exoSeparateSol
+    \let\endexo\@endexoSeparateSol
     \AtEndDocument{%
-    {\bf \noindent Solutions.}
-    \solutions
-    \ifnum\no@end@enum=\false\end{enumerate}\fi}
-  \else \ifSE@afterexo
-    \def\endhere{\fakeendhere}
-    \long\def\solution#1{\separated@solution{#1}}
-    \let\endexo@@orig\endexo
-    \long\def\endexo{\endexo@@orig
+      {\bf \noindent Solutions.}
       \solutions
-      \ifnum\no@end@enum=\false\end{enumerate}\fi
-      \gdef\solutions{}}
-  \else%
-    \def\endhere{\trueendhere}
-    \long\def\solution#1{\truesolution{#1}}
+    }
+  \else 
+    \ifSE@afterexo
+      \def\endhere{\fakeendhere}
+      \long\def\@Solution#1{\@SeparatedSolution{#1}}
+      \let\exo\@exoAfterSol
+      \let\endexo\@endexoAfterSol
+    \else%
+      \def\endhere{\trueendhere}
+      \long\def\@Solution#1{\truesolution{#1}}
+    \fi%
   \fi%
 \fi%
+\let\solution\@Solution
 
+\ifSE@questions
+\else
+  % Babel overloads some envs at \begin{document}, so we need this trick
+  \AtBeginDocument{%
+    \let\enumerate\questions
+    \let\endenumerate\endquestions
+  }
+\fi
 \endinput
 
-%%
 %% End of file `solexo.sty'.
