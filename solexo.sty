@@ -158,10 +158,12 @@
   \solutions
 }
 
+\gdef\@enumerateOption{}
 \let\@enumerateOrig\enumerate
 \let\end@enumerateOrig\endenumerate
 \newenvironment{questions}[1][]
-  {\@enumerateOrig[#1] \StartEnumtrue}
+  {\@enumerateOrig[#1] \StartEnumtrue
+   \xdef\@enumerateOption{#1}}
   {\end@enumerateOrig%
   \ifEndEnum
     \g@addto@macro\solutions{\end{@enumerateOrig}}
@@ -171,6 +173,10 @@
 \long\def\@SeparatedSolution#1{
   \ifStartEnum
     \g@addto@macro\solutions{\begin{@enumerateOrig}}
+    % Make sure to pass enumerate options to the solutions
+    \ifx\@enumerateOption\@empty \else
+      \expandafter\g@addto@macro\expandafter\solutions\expandafter{\expandafter[\@enumerateOption]}
+    \fi
     \EndEnumtrue
   \fi
   \ifEndEnum
