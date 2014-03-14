@@ -81,6 +81,11 @@
 }
 
 \ProcessOptions
+\ifSE@nosol
+  \global\SE@separatedsolfalse%
+  \global\SE@afterexofalse%
+\fi
+
 \RequirePackage{amsthm}
 \RequirePackage{amsmath}
 \RequirePackage{trace}
@@ -156,8 +161,11 @@
 \let\@enumerateOrig\enumerate
 \let\end@enumerateOrig\endenumerate
 \newenvironment{questions}[1][]
-  {\@enumerateOrig{#1} \StartEnumtrue}
-  {\end@enumerateOrig\g@addto@macro\solutions{\end{@enumerateOrig}}}
+  {\@enumerateOrig[#1] \StartEnumtrue}
+  {\end@enumerateOrig%
+  \ifEndEnum
+    \g@addto@macro\solutions{\end{@enumerateOrig}}
+  \fi}
 
 
 \long\def\@SeparatedSolution#1{
