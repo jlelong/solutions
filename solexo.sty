@@ -125,10 +125,10 @@
 \StartEnumfalse
 \EndEnumfalse
 
-\def\@exoSeparateSol{%
+\newenvironment{@exoSeparateSol}[1][]{%
   \StartEnumfalse
   \EndEnumfalse
-  \@exoOrig%
+  \@exoOrig[#1]%
   \g@addto@macro\solutions{%
     \vskip\baselineskip
     {\bf \noexpand\noindent Corrigé de l'exercice }
@@ -139,12 +139,10 @@
     \currentexo%
   }
 }
-\def\@endexoSeparateSol{
-  \@endexoOrig
-}
+{ \@endexoOrig }
 
-\def\@exoAfterSol{
-  \@exoOrig
+\newenvironment{@exoAfterSol}[1][]{
+  \@exoOrig[#1]
   \StartEnumfalse
   \EndEnumfalse
   \gdef\solutions{}
@@ -153,7 +151,7 @@
     {\bf \noindent Corrigé de l'exercice \theexo.\hspace{1ex}}
   }
 }
-\def\@endexoAfterSol{
+{
   \@endexoOrig
   \solutions
 }
