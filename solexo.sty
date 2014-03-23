@@ -159,8 +159,8 @@
 \gdef\@enumerateOption{}
 \let\@enumerateOrig\enumerate
 \let\end@enumerateOrig\endenumerate
-\newenvironment{questions}[1][]
-  {\@enumerateOrig[#1] \StartEnumtrue
+\newenvironment{questions}[1][\@empty]
+  {\ifx#1\@empty\@enumerateOrig \else \@enumerateOrig[#1]\fi \StartEnumtrue
    \xdef\@enumerateOption{#1}}
   {\end@enumerateOrig%
   \ifEndEnum
