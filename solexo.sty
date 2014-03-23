@@ -60,31 +60,33 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{solexo}[24/02/2014 revision 1.1rc by Jerome LELONG]
 
-\newif\ifSE@nosol
-\DeclareOption{nosol}{%
-  \global\SE@nosoltrue%
-}
-
-\newif\ifSE@separatedsol
-\DeclareOption{separate}{%
-  \global\SE@separatedsoltrue%
-}
-
-\newif\ifSE@afterexo
-\DeclareOption{after}{%
-  \global\SE@afterexotrue%
-}
+\newif\ifSE@nosol\SE@nosolfalse
+\newif\ifSE@separatedsol\SE@separatedsolfalse
+\newif\ifSE@afterexo\SE@afterexofalse
 
 \newif\ifSE@questions
-\DeclareOption{questions}{%
-  \global\SE@questionstrue
+\DeclareOption{nosol}{%
+  \SE@nosoltrue%
 }
 
-\ProcessOptions
+\DeclareOption{separate}{%
+  \ifSE@afterexo\SE@separatedsolfalse\else\SE@separatedsoltrue\fi
+}
+
+\DeclareOption{after}{%
+  \ifSE@separatedsol\SE@afterexofalse\else\SE@afterexotrue\fi
+}
+
+\DeclareOption{questions}{%
+  \SE@questionstrue
+}
+
+\ProcessOptions*
 \ifSE@nosol
-  \global\SE@separatedsolfalse%
-  \global\SE@afterexofalse%
+  \SE@separatedsolfalse%
+  \SE@afterexofalse%
 \fi
+
 
 \RequirePackage{amsthm}
 \RequirePackage{amsmath}
@@ -192,7 +194,7 @@
     \def\endhere{\fakeendhere}
     \long\def\@Solution#1{\@SeparatedSolution{#1}}
     \let\exo\@exoSeparateSol
-    \let\endexo\@endexoSeparateSol
+    \let\endexo\end@exoSeparateSol
     \AtEndDocument{%
       {\bf \noindent Solutions.}
       \solutions
@@ -202,7 +204,7 @@
       \def\endhere{\fakeendhere}
       \long\def\@Solution#1{\@SeparatedSolution{#1}}
       \let\exo\@exoAfterSol
-      \let\endexo\@endexoAfterSol
+      \let\endexo\end@exoAfterSol
     \else%
       \def\endhere{\trueendhere}
       \long\def\@Solution#1{\truesolution{#1}}
