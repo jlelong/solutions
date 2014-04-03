@@ -101,14 +101,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % Solutions in the text
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\newif\ifQedDone
 \def\trueendhere{%
   \leavevmode\tag*{$\blacktriangle$}%
-  \let\ifqeddone\iftrue
+  \global\QedDonetrue
 }
 \long\def\truesolution#1{
-  \let\ifqeddone\iffalse
+  \QedDonefalse
   \par\vskip10pt\noindent{\bf Solution.}~#1%
-  \ifqeddone
+  \ifQedDone
   \else
     \ignorespaces\unskip\penalty9999%
     \hbox{}\nobreak\hfill\hbox{$\blacktriangle$}
