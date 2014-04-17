@@ -134,7 +134,7 @@
   \@exoOrig[#1]%
   \g@addto@macro\solutions{%
     \vskip\baselineskip
-    {\bf \noexpand\noindent Corrigé de l'exercice }
+    {\bf \noexpand\noindent Corrig\'e de l'exercice }
   }
   % Make sure \theexo is expanded rightaway
   \edef\currentexo{{\noexpand\bf \theexo. \noexpand\hspace{1ex}}}
@@ -142,19 +142,19 @@
     \currentexo%
   }
 }
-{ \@endexoOrig }
+{\@endexoOrig}
 
-\newenvironment{@exoAfterSol}[1][]{
+\newenvironment{@exoAfterSol}[1][]{%
   \@exoOrig[#1]
   \StartEnumfalse
   \EndEnumfalse
   \gdef\solutions{}
-  \g@addto@macro\solutions{
+  \g@addto@macro\solutions{%
     \vskip\baselineskip
-    {\bf \noindent Corrigé de l'exercice \theexo.\hspace{1ex}}
+    {\bf \noindent Corrig\'e de l'exercice \theexo.\hspace{1ex}}
   }
 }
-{
+{%
   \@endexoOrig
   \solutions
 }
@@ -171,21 +171,23 @@
   \fi}
 
 
-\long\def\@SeparatedSolution#1{
-  \ifStartEnum
-    \g@addto@macro\solutions{\begin{@enumerateOrig}}
+\long\def\@SeparatedSolution#1{%
+  \unskip%
+  \ifStartEnum%
+    \g@addto@macro\solutions{\begin{@enumerateOrig}}%
     % Make sure to pass enumerate options to the solutions
-    \ifx\@enumerateOption\@empty \else
-      \expandafter\g@addto@macro\expandafter\solutions\expandafter{\expandafter[\@enumerateOption]}
-    \fi
-    \EndEnumtrue
-  \fi
-  \ifEndEnum
-    \g@addto@macro\solutions{\item #1}
-  \else
-    \g@addto@macro\solutions{#1}
-  \fi
-  \StartEnumfalse
+    \ifx\@enumerateOption\@empty \else%
+      \expandafter\g@addto@macro\expandafter\solutions\expandafter{\expandafter[\@enumerateOption]}%
+    \fi%
+    \EndEnumtrue%
+  \fi%
+  \ifEndEnum%
+    \g@addto@macro\solutions{\item #1}%
+  \else%
+    \g@addto@macro\solutions{#1}%
+  \fi%
+  \StartEnumfalse%
+  \ignorespaces%
 }
 
 \ifSE@nosol%
@@ -193,7 +195,7 @@
 \else%
   \ifSE@separatedsol
     \def\endhere{\fakeendhere}
-    \long\def\@Solution#1{\@SeparatedSolution{#1}}
+    \let\@Solution\@SeparatedSolution
     \let\exo\@exoSeparateSol
     \let\endexo\end@exoSeparateSol
     \AtEndDocument{%
@@ -203,7 +205,7 @@
   \else 
     \ifSE@afterexo
       \def\endhere{\fakeendhere}
-      \long\def\@Solution#1{\@SeparatedSolution{#1}}
+      \let\@Solution\@SeparatedSolution
       \let\exo\@exoAfterSol
       \let\endexo\end@exoAfterSol
     \else%
