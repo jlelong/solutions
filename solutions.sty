@@ -17,14 +17,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % This package is devoted to writing exercises along with their
-% solutions in a single document. 
+% solutions in a single source file.
 %
 % Simply add
 %    \usepackage{solutions}
 % This package accepts three options:
 %   - 'nosol' means that the solutions are not included in the output.
 %   - 'separate' indicate that the solutions should be printed right before
-%   \end{document}. 
+%   \end{document}.
 %   - 'after' prints the solution of an exercise right after its text. This
 %   produces a mixed document where exercise texts and their solutions
 %   alternate.
@@ -46,7 +46,7 @@
 %     \solution{Solution to the previous question.}
 % \end{enumerate}
 % Add some extra gobal information if any
-% \begin{enumerate}[resume] 
+% \begin{enumerate}[resume]
 % %% include the enumitem package to use the resume option
 %   \item Question 3.
 %     \solution{Solution to the previous question.}
@@ -58,32 +58,62 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{solutions}[2018/02/25 revision 1.2 by Jerome LELONG]
 
-\newif\ifSE@nosol\SE@nosolfalse
-\newif\ifSE@separatedsol\SE@separatedsolfalse
-\newif\ifSE@afterexo\SE@afterexofalse
+\newif\ifsolutions@nosol
+\newif\ifsolutions@separate
+\newif\ifsolutions@after
+\newif\ifsolutions@inline
+\newif\ifsolutions@questions
 
-\newif\ifSE@questions
+\solutions@nosolfalse
+\solutions@separatefalse
+\solutions@afterfalse
+\solutions@inlinefalse
+
+\def\solutions@opterr{%
+  \PackageError{solutions}{Options 'nosol', 'inline', 'separate', 'after' are are mutually exclusive.}{}%
+}
+
+% Do not print any solution
 \DeclareOption{nosol}{%
-  \SE@nosoltrue%
+  \ifsolutions@separate\solutions@opterr\fi
+  \ifsolutions@after\solutions@opterr\fi
+  \ifsolutions@inline\solutions@opterr\fi
+  \solutions@nosoltrue%
 }
 
+% Print each solution after its associated question
+\DeclareOption{inline}{%
+  \ifsolutions@separate\solutions@opterr\fi
+  \ifsolutions@after\solutions@opterr\fi
+  \ifsolutions@nosol\solutions@opterr\fi
+  \solutions@inlinetrue%
+}
+
+% Print the solutions at the end of the document
 \DeclareOption{separate}{%
-  \ifSE@afterexo\SE@separatedsolfalse\else\SE@separatedsoltrue\fi
+  \ifsolutions@nosol\solutions@opterr\fi
+  \ifsolutions@after\solutions@opterr\fi
+  \ifsolutions@inline\solutions@opterr\fi
+  \solutions@separatetrue
 }
 
+% Print the solutions of an exercise right after the exercise
 \DeclareOption{after}{%
-  \ifSE@separatedsol\SE@afterexofalse\else\SE@afterexotrue\fi
+  \ifsolutions@separate\solutions@opterr\fi
+  \ifsolutions@nosol\solutions@opterr\fi
+  \ifsolutions@inline\solutions@opterr\fi
+  \solutions@aftertrue
 }
 
 \DeclareOption{questions}{%
-  \SE@questionstrue
+  \solutions@questionstrue
+}
+
+\DeclareOption*{%
+  \PackageWarning{fred}{Unknown option `\CurrentOption'}%
 }
 
 \ProcessOptions*
-\ifSE@nosol
-  \SE@separatedsolfalse%
-  \SE@afterexofalse%
-\fi
 
 
 \RequirePackage{amsthm}
@@ -96,9 +126,9 @@
 \let\@exoOrig=\exo
 \let\@endexoOrig=\endexo
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Solutions in the text
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifQedDone
 \def\trueendhere{%
   \leavevmode\tag*{$\blacktriangle$}%
@@ -116,9 +146,9 @@
 }
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% Separated solutions 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Separated solutions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \gdef\solutions{}
 \def\fakeendhere{}
 \newif\ifStartEnum
@@ -169,7 +199,7 @@
   \fi}
 
 
-\long\def\@SeparatedSolution#1{%
+\long\def\@separatesolution#1{%
   \ifStartEnum%
     \g@addto@macro\solutions{\begin{@enumerateOrig}}%
     % Make sure to pass enumerate options to the solutions
@@ -187,22 +217,22 @@
   \ignorespaces%
 }
 
-\ifSE@nosol%
+\ifsolutions@nosol%
   \long\def\@Solution#1{}
 \else%
-  \ifSE@separatedsol
+  \ifsolutions@separate
     \def\endhere{\fakeendhere}
-    \let\@Solution\@SeparatedSolution
+    \let\@Solution\@separatesolution
     \let\exo\@exoSeparateSol
     \let\endexo\end@exoSeparateSol
     \AtEndDocument{%
       {\bf \noindent Solutions.}
       \solutions
     }
-  \else 
-    \ifSE@afterexo
+  \else
+    \ifsolutions@after
       \def\endhere{\fakeendhere}
-      \let\@Solution\@SeparatedSolution
+      \let\@Solution\@separatesolution
       \let\exo\@exoAfterSol
       \let\endexo\end@exoAfterSol
     \else%
@@ -213,7 +243,7 @@
 \fi%
 \let\solution\@Solution
 
-\ifSE@questions
+\ifsolutions@questions
 \else
   % Babel overloads some envs at \begin{document}, so we need this trick
   \AtBeginDocument{%
