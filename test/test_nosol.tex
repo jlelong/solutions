@@ -1,0 +1,61 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{a4wide}
+\usepackage{t1enc,lmodern,enumitem}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[nosol]{solutions}
+
+%--------------------------------------------
+\hbadness=10000
+\emergencystretch=\hsize
+\tolerance=9999
+\textheight=9.0in
+%--------------------------------------------
+
+\def\R{{\mathbb R}}
+
+\begin{document}
+\begin{center}
+  {\large \bf Testing the \texttt{solutions} package.}
+\end{center}
+\vspace{1em}
+
+\begin{exo}
+  First exercise using a standard layout.
+  \begin{enumerate}
+    \item First question.
+    \solution{A short answer.}
+    \item Second question.
+    \solution{A somehow more realistic answer ending with an equation
+    \begin{align*}
+      \forall \, x,y \, \in \, \R, \, (x + y)^2 = x^2 + y^2 + 2xy. \endhere
+    \end{align*}}
+  \end{enumerate}
+  Let us introduce some more material before adding new questions.
+  \begin{enumerate}[resume]
+    \item A third question.
+    \solution{And its solution.}
+  \end{enumerate}
+\end{exo}
+
+\begin{exo}
+  Soit $f_1, \dots, f_N$ $N$ fonctions de $\R_+$ dans $\R$ et $G_1, \dots, G_N$
+  $N$ gaussiennes centrées réduites et indépendantes. Montrer que le processus
+  $X$ défini par $X_t = \sum_{i=1}^N f_i(t) G_i$ est un processus gaussien et
+  calculer ses fonctions de moyenne et de covariance.  
+  
+  \solution{Il faut montrer que pour tous $t_1, \dots, t_n$, le vecteur $\bar
+    X^n = (X_{t_1},\dots, X_{t_n})$ est un vecteur gaussien. Soit $a \in R^n$, 
+    \begin{align*}
+      a \cdot \bar X^n & = \sum_{i=1}^n a_i X_{t_i} = \sum_{i=1}^n a_i
+      \sum_{j=1}^N f_j(t_i) G_j 
+      = \sum_{j=1}^N \left(\sum_{i=1}^n a_i f_j(t_i)\right) G_j
+    \end{align*}
+    On conclut puisque  le vecteur $G_1, \dots, G_N$ est un vecteur gaussien. 
+  }
+\end{exo}
+
+
+\pagebreak
+\end{document}
