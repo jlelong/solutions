@@ -150,7 +150,7 @@
 }
 \long\def\truesolution#1{
   \QedDonefalse
-  \par\vskip10pt\noindent\solutionsinlinename{\solutionsinlinefont #1}%
+  \par\vskip10pt\noindent\solutionsinlinename{\solutionsinlinefont#1}%
   \ifQedDone
   \else
     \ignorespaces\unskip\penalty9999%
@@ -178,7 +178,7 @@
     \vskip\baselineskip
     {\bf \noexpand\noindent \solutionsanswerenvname}}
   % Make sure \theexercise is expanded rightaway
-  \edef\currentexo{{\space\noexpand\bf\theexercise. \noexpand}}
+  \edef\currentexo{{\space\noexpand\bf\theexercise.\space\noexpand}}
   \expandafter\g@addto@macro\expandafter\solutions\expandafter{\currentexo}
 }
 {\@endexoOrig}
@@ -190,7 +190,7 @@
   \gdef\solutions{}
   \g@addto@macro\solutions{%
     \vskip\baselineskip
-    {\bf \noindent \solutionsanswerenvname\space\theexercise.}\space}
+    {\bf \noindent \solutionsanswerenvname\space\theexercise.\space}}
 }
 {%
   \@endexoOrig
