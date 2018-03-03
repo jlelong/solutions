@@ -58,11 +58,14 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{solutions}[dev version by Jerome LELONG]
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Options
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \newif\ifsolutions@nosol
 \newif\ifsolutions@separate
 \newif\ifsolutions@after
 \newif\ifsolutions@inline
-\newif\ifsolutions@questions
 
 \solutions@nosolfalse
 \solutions@separatefalse
@@ -243,14 +246,6 @@
 \fi%
 \let\solution\@Solution
 
-\ifsolutions@questions
-\else
-  % Babel overloads some envs at \begin{document}, so we need this trick
-  \AtBeginDocument{%
-    \let\enumerate\questions
-    \let\endenumerate\endquestions
-  }
-\fi
 \endinput
 
-%% End of file `solexo.sty'.
+%% End of file `solutions.sty'.
