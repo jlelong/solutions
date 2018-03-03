@@ -114,13 +114,28 @@
 
 \ProcessOptions*
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Configuration
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\solutionsinlinename}{{\bf Solution.}\space}
+\newcommand{\solutionsinlinefont}{\small \itshape}
+\newcommand{\solutionsinlineendsymbol}{$\blacktriangle$}
+\newcommand{\solutionsatenddocumenttitle}{\noindent {\bf Solutions}}
+\newcommand{\solutionsanswerenvname}{Corrig\'e de l'exercice}
+
+\newcommand{\solutionsexercisename}{Exercice}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Environnements
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \RequirePackage{amsthm}
 \RequirePackage{amsmath}
 \RequirePackage{trace}
 
 \theoremstyle{definition}
-\newtheorem{exercise}{Exercice}
+\newtheorem{exercise}{\solutionsexercisename}
 
 \let\@exoOrig=\exercise
 \let\@endexoOrig=\endexercise
@@ -130,16 +145,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifQedDone
 \def\trueendhere{%
-  \leavevmode\tag*{$\blacktriangle$}%
+  \leavevmode\tag*{\solutionsinlineendsymbol}%
   \global\QedDonetrue
 }
 \long\def\truesolution#1{
   \QedDonefalse
-  \par\vskip10pt\noindent{\bf Solution.}~#1%
+  \par\vskip10pt\noindent\solutionsinlinename{\solutionsinlinefont #1}%
   \ifQedDone
   \else
     \ignorespaces\unskip\penalty9999%
-    \hbox{}\nobreak\hfill\hbox{$\blacktriangle$}
+    \hbox{}\nobreak\hfill\hbox{\solutionsinlineendsymbol}
   \fi
   \par\vskip10pt
 }
@@ -161,13 +176,10 @@
   \@exoOrig[#1]%
   \g@addto@macro\solutions{%
     \vskip\baselineskip
-    {\bf \noexpand\noindent Corrig\'e de l'exercice }
-  }
+    {\bf \noexpand\noindent \solutionsanswerenvname}}
   % Make sure \theexercise is expanded rightaway
-  \edef\currentexo{{\noexpand\bf \theexercise. \noexpand\hspace{1ex}}}
-  \expandafter\g@addto@macro\expandafter\solutions\expandafter{%
-    \currentexo%
-  }
+  \edef\currentexo{{\space\noexpand\bf\theexercise. \noexpand}}
+  \expandafter\g@addto@macro\expandafter\solutions\expandafter{\currentexo}
 }
 {\@endexoOrig}
 
@@ -178,8 +190,7 @@
   \gdef\solutions{}
   \g@addto@macro\solutions{%
     \vskip\baselineskip
-    {\bf \noindent Corrig\'e de l'exercice \theexercise.\hspace{1ex}}
-  }
+    {\bf \noindent \solutionsanswerenvname\space\theexercise.}\space}
 }
 {%
   \@endexoOrig
@@ -225,7 +236,7 @@
     \let\exercise\@exoSeparateSol
     \let\endexercise\end@exoSeparateSol
     \AtEndDocument{%
-      {\bf \noindent Solutions.}
+      \solutionsatenddocumenttitle
       \solutions
     }
   \else
