@@ -37,7 +37,7 @@
 %
 % Here is a typical usage
 %
-% \begin{exo}[optional title]
+% \begin{exercise}[optional title]
 % Some introducive text.
 % \begin{enumerate}
 %   \item Question 1.
@@ -53,7 +53,7 @@
 %   \item Question 4.
 %     \solution{Solution to the previous question.}
 % \end{enumerate}
-% \end{exo}
+% \end{exercise}
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{solutions}[dev version by Jerome LELONG]
@@ -108,12 +108,8 @@
   \solutions@aftertrue
 }
 
-\DeclareOption{questions}{%
-  \solutions@questionstrue
-}
-
 \DeclareOption*{%
-  \PackageWarning{fred}{Unknown option `\CurrentOption'}%
+  \PackageWarning{solutions}{Unknown option `\CurrentOption'}%
 }
 
 \ProcessOptions*
@@ -124,10 +120,10 @@
 \RequirePackage{trace}
 
 \theoremstyle{definition}
-\newtheorem{exo}{Exercice}
+\newtheorem{exercise}{Exercice}
 
-\let\@exoOrig=\exo
-\let\@endexoOrig=\endexo
+\let\@exoOrig=\exercise
+\let\@endexoOrig=\endexercise
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Solutions in the text
@@ -150,7 +146,7 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Separated solutions
+% Separate solutions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \gdef\solutions{}
 \def\fakeendhere{}
@@ -167,8 +163,8 @@
     \vskip\baselineskip
     {\bf \noexpand\noindent Corrig\'e de l'exercice }
   }
-  % Make sure \theexo is expanded rightaway
-  \edef\currentexo{{\noexpand\bf \theexo. \noexpand\hspace{1ex}}}
+  % Make sure \theexercise is expanded rightaway
+  \edef\currentexo{{\noexpand\bf \theexercise. \noexpand\hspace{1ex}}}
   \expandafter\g@addto@macro\expandafter\solutions\expandafter{%
     \currentexo%
   }
@@ -182,7 +178,7 @@
   \gdef\solutions{}
   \g@addto@macro\solutions{%
     \vskip\baselineskip
-    {\bf \noindent Corrig\'e de l'exercice \theexo.\hspace{1ex}}
+    {\bf \noindent Corrig\'e de l'exercice \theexercise.\hspace{1ex}}
   }
 }
 {%
@@ -226,8 +222,8 @@
   \ifsolutions@separate
     \def\endhere{\fakeendhere}
     \let\@Solution\@separatesolution
-    \let\exo\@exoSeparateSol
-    \let\endexo\end@exoSeparateSol
+    \let\exercise\@exoSeparateSol
+    \let\endexercise\end@exoSeparateSol
     \AtEndDocument{%
       {\bf \noindent Solutions.}
       \solutions
@@ -236,8 +232,8 @@
     \ifsolutions@after
       \def\endhere{\fakeendhere}
       \let\@Solution\@separatesolution
-      \let\exo\@exoAfterSol
-      \let\endexo\end@exoAfterSol
+      \let\exercise\@exoAfterSol
+      \let\endexercise\end@exoAfterSol
     \else%
       \def\endhere{\trueendhere}
       \long\def\@Solution#1{\truesolution{#1}}
@@ -245,6 +241,10 @@
   \fi%
 \fi%
 \let\solution\@Solution
+
+% Compatibility definitions
+\let\exo=\exercise
+\let\endexo=\endexercise
 
 \endinput
 
