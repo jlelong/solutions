@@ -164,16 +164,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \gdef\solutions{}
 \def\fakeendhere{}
-\newif\ifStartEnum
-\newif\ifEndEnum
+\newif\ifStartQuestions
+\newif\ifEndQuestions
 \newcounter{nestedQuestions}
-\StartEnumfalse
-\EndEnumfalse
+\StartQuestionsfalse
+\EndQuestionsfalse
 \setcounter{nestedQuestions}{0}
 
 \newenvironment{@exoSeparateSol}[1][]{%
-  \StartEnumfalse
-  \EndEnumfalse
+  \StartQuestionsfalse
+  \EndQuestionsfalse
   \@exoOrig[#1]%
   \g@addto@macro\solutions{%
     \vskip\baselineskip
@@ -186,8 +186,8 @@
 
 \newenvironment{@exoAfterSol}[1][]{%
   \@exoOrig[#1]
-  \StartEnumfalse
-  \EndEnumfalse
+  \StartQuestionsfalse
+  \EndQuestionsfalse
   \gdef\solutions{}
   \g@addto@macro\solutions{%
     \vskip\baselineskip
@@ -211,20 +211,20 @@
      \expandafter\gdef\expandafter\@enumerateOption\expandafter{\currentEnumOption}
    \fi
     \addtocounter{nestedQuestions}{1}
-    \StartEnumtrue
+    \StartQuestionstrue
   }
   {\endenumerate%
    \addtocounter{nestedQuestions}{-1}
-   \ifEndEnum
+   \ifEndQuestions
      \g@addto@macro\solutions{\end{enumerate}}
    \fi
-   \EndEnumfalse
-   \StartEnumfalse%
+   \EndQuestionsfalse
+   \StartQuestionsfalse%
   }
 
 
 \long\def\@separatesolution#1{%
-  \ifStartEnum%
+  \ifStartQuestions%
     \ifnum\value{nestedQuestions}>1
       \g@addto@macro\solutions{\item }%
     \fi
@@ -233,14 +233,14 @@
     \ifx\@enumerateOption\@empty \else%
       \expandafter\g@addto@macro\expandafter\solutions\expandafter{\expandafter[\@enumerateOption]}%
     \fi%
-    \EndEnumtrue%
+    \EndQuestionstrue%
   \fi%
   \ifnum\value{nestedQuestions}>0
     \g@addto@macro\solutions{\item #1}%
   \else%
     \g@addto@macro\solutions{#1}%
   \fi%
-  \StartEnumfalse%
+  \StartQuestionsfalse%
   \ignorespaces%
 }
 
