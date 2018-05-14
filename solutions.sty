@@ -166,8 +166,10 @@
 \def\fakeendhere{}
 \newif\ifStartEnum
 \newif\ifEndEnum
+\newcounter{nestedQuestions}
 \StartEnumfalse
 \EndEnumfalse
+\setcounter{nestedQuestions}{0}
 
 \newenvironment{@exoSeparateSol}[1][]{%
   \StartEnumfalse
@@ -210,16 +212,24 @@
      %  \show\currentEnumOption
      \expandafter\gdef\expandafter\@enumerateOption\expandafter{\currentEnumOption}
    \fi
+    \addtocounter{nestedQuestions}{1}
     \StartEnumtrue
   }
   {\end@enumerateOrig%
-  \ifEndEnum
-    \g@addto@macro\solutions{\end{@enumerateOrig}}
-  \fi}
+   \addtocounter{nestedQuestions}{-1}
+   \ifEndEnum
+     \g@addto@macro\solutions{\end{@enumerateOrig}}
+   \fi
+   \EndEnumfalse
+   \StartEnumfalse%
+  }
 
 
 \long\def\@separatesolution#1{%
   \ifStartEnum%
+    \ifnum\value{nestedQuestions}>1
+      \g@addto@macro\solutions{\item }%
+    \fi
     \g@addto@macro\solutions{\begin{@enumerateOrig}}%
     % Make sure to pass enumerate options to the solutions
     \ifx\@enumerateOption\@empty \else%
@@ -227,7 +237,7 @@
     \fi%
     \EndEnumtrue%
   \fi%
-  \ifEndEnum%
+  \ifnum\value{nestedQuestions}>0
     \g@addto@macro\solutions{\item #1}%
   \else%
     \g@addto@macro\solutions{#1}%
