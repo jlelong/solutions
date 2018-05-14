@@ -199,14 +199,12 @@
 }
 
 \gdef\@enumerateOption{}
-\let\@enumerateOrig\enumerate
-\let\end@enumerateOrig\endenumerate
 \newenvironment{questions}[1][\@empty]
   {\ifx#1\@empty
-     \@enumerateOrig 
-     \xdef\enumerateOption{#1}
+     \enumerate 
+     \xdef\enumerateOption{\@empty}
    \else
-     \@enumerateOrig[#1]
+     \enumerate[#1]
      % We use an extract macro to make sure, we do not expand the macros inside #1
      \def\currentEnumOption{#1}
      %  \show\currentEnumOption
@@ -215,10 +213,10 @@
     \addtocounter{nestedQuestions}{1}
     \StartEnumtrue
   }
-  {\end@enumerateOrig%
+  {\endenumerate%
    \addtocounter{nestedQuestions}{-1}
    \ifEndEnum
-     \g@addto@macro\solutions{\end{@enumerateOrig}}
+     \g@addto@macro\solutions{\end{enumerate}}
    \fi
    \EndEnumfalse
    \StartEnumfalse%
@@ -230,7 +228,7 @@
     \ifnum\value{nestedQuestions}>1
       \g@addto@macro\solutions{\item }%
     \fi
-    \g@addto@macro\solutions{\begin{@enumerateOrig}}%
+    \g@addto@macro\solutions{\begin{enumerate}}%
     % Make sure to pass enumerate options to the solutions
     \ifx\@enumerateOption\@empty \else%
       \expandafter\g@addto@macro\expandafter\solutions\expandafter{\expandafter[\@enumerateOption]}%
