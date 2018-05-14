@@ -200,8 +200,18 @@
 \let\@enumerateOrig\enumerate
 \let\end@enumerateOrig\endenumerate
 \newenvironment{questions}[1][\@empty]
-  {\ifx#1\@empty\@enumerateOrig \else \@enumerateOrig[#1]\fi \StartEnumtrue
-   \xdef\@enumerateOption{#1}}
+  {\ifx#1\@empty
+     \@enumerateOrig 
+     \xdef\enumerateOption{#1}
+   \else
+     \@enumerateOrig[#1]
+     % We use an extract macro to make sure, we do not expand the macros inside #1
+     \def\currentEnumOption{#1}
+     %  \show\currentEnumOption
+     \expandafter\gdef\expandafter\@enumerateOption\expandafter{\currentEnumOption}
+   \fi
+    \StartEnumtrue
+  }
   {\end@enumerateOrig%
   \ifEndEnum
     \g@addto@macro\solutions{\end{@enumerateOrig}}
