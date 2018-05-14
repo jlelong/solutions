@@ -166,14 +166,35 @@
 \def\fakeendhere{}
 \newif\ifStartQuestions
 \newif\ifEndQuestions
-\newcounter{nestedQuestions}
+\newif\ifStartSubQuestions
+\newif\ifEndSubQuestions
+\newif\ifStartQuestionsOrSubQuestions
+\newif\ifEndQuestionsOrSubQuestions
 \StartQuestionsfalse
 \EndQuestionsfalse
-\setcounter{nestedQuestions}{0}
+\StartSubQuestionsfalse
+\EndSubQuestionsfalse
+
+\def\updateStartIf{\ifStartQuestions%
+    \StartQuestionsOrSubQuestionstrue
+  \else\ifStartSubQuestions
+      \StartQuestionsOrSubQuestionstrue
+    \else\StartQuestionsOrSubQuestionsfalse
+  \fi
+\fi}
+\def\updateEndIf{\ifEndQuestions%
+    \EndQuestionsOrSubQuestionstrue
+  \else\ifEndSubQuestions
+      \EndQuestionsOrSubQuestionstrue
+    \else\EndQuestionsOrSubQuestionsfalse
+  \fi
+\fi}
 
 \newenvironment{@exoSeparateSol}[1][]{%
   \StartQuestionsfalse
   \EndQuestionsfalse
+  \StartSubQuestionsfalse
+  \EndSubQuestionsfalse
   \@exoOrig[#1]%
   \g@addto@macro\solutions{%
     \vskip\baselineskip
@@ -188,6 +209,8 @@
   \@exoOrig[#1]
   \StartQuestionsfalse
   \EndQuestionsfalse
+  \StartSubQuestionsfalse
+  \EndSubQuestionsfalse
   \gdef\solutions{}
   \g@addto@macro\solutions{%
     \vskip\baselineskip
@@ -199,48 +222,104 @@
 }
 
 \gdef\@enumerateOption{}
+\gdef\@subenumerateOption{}
 \newenvironment{questions}[1][\@empty]
-  {\ifx#1\@empty
-     \enumerate 
-     \xdef\enumerateOption{\@empty}
-   \else
-     \enumerate[#1]
-     % We use an extract macro to make sure, we do not expand the macros inside #1
-     \def\currentEnumOption{#1}
-     %  \show\currentEnumOption
-     \expandafter\gdef\expandafter\@enumerateOption\expandafter{\currentEnumOption}
-   \fi
-    \addtocounter{nestedQuestions}{1}
-    \StartQuestionstrue
-  }
-  {\endenumerate%
-   \addtocounter{nestedQuestions}{-1}
-   \ifEndQuestions
-     \g@addto@macro\solutions{\end{enumerate}}
-   \fi
-   \EndQuestionsfalse
-   \StartQuestionsfalse%
-  }
+{%
+  \ifx#1\@empty
+    \enumerate 
+    \xdef\@enumerateOption{\@empty}
+  \else
+    \enumerate[#1]
+    % We use an extract macro to make sure, we do not expand the macros inside #1
+    \def\currentEnumOption{#1}
+    \expandafter\gdef\expandafter\@enumerateOption\expandafter{\currentEnumOption}
+  \fi
+  \StartQuestionstrue
+}{%
+  \ifEndQuestions
+    \g@addto@macro\solutions{\end{enumerate}}
+  \fi
+  \EndQuestionsfalse
+  \StartQuestionsfalse%
+  \endenumerate%
+}
+
+\newenvironment{subquestions}[1][\@empty]
+{%
+  \ifx#1\@empty
+    \enumerate 
+    \xdef\@subenumerateOption{\@empty}
+  \else
+    \enumerate[#1]
+    % We use an extract macro to make sure, we do not expand the macros inside #1
+    \def\currentEnumOption{#1}
+    \expandafter\gdef\expandafter\@subenumerateOption\expandafter{\currentEnumOption}
+  \fi
+  \StartSubQuestionstrue
+}{%
+  \ifEndSubQuestions
+    \g@addto@macro\solutions{\end{enumerate}}
+  \fi
+  \EndSubQuestionsfalse
+  \StartSubQuestionsfalse%
+  \endenumerate%
+}
 
 
 \long\def\@separatesolution#1{%
-  \ifStartQuestions%
-    \ifnum\value{nestedQuestions}>1
-      \g@addto@macro\solutions{\item }%
+  % \begin{questions}
+  %    \item 
+  %    \solution
+  %    \item \begin{subquestions}
+  %      \item 
+  %      \solution 
+  % addto@macro: item, enumerate, item
+  \ifStartQuestions\else
+    \ifStartSubQuestions%
+        \g@addto@macro\solutions{\item }%
     \fi
+  \fi
+  % \begin{questions}
+  %    \item \begin{subquestions}
+  %      \item 
+  %      \solution 
+  % addto@macro: enumerate, item, enumerate, item
+  \ifStartQuestions%
     \g@addto@macro\solutions{\begin{enumerate}}%
+    \expandafter\g@addto@macro\expandafter\solutions\expandafter{\expandafter[\@enumerateOption]}%
+    % Make sure to switch \ifStartQuestions globally
+    \expandafter\global\StartQuestionsfalse
+    \ifStartSubQuestions%
+      \g@addto@macro\solutions{\item }%
+      \g@addto@macro\solutions{\begin{enumerate}}%
+      \expandafter\g@addto@macro\expandafter\solutions\expandafter{\expandafter[\@subenumerateOption]}%
+      \StartSubQuestionsfalse
+      \EndSubQuestionstrue%
+    \fi
+    % Make sure to switch \ifEndQuestions globally
+    \expandafter\global\EndQuestionstrue%
+  \else
+    \ifStartSubQuestions%
+      \g@addto@macro\solutions{\begin{enumerate}}%
+      \expandafter\g@addto@macro\expandafter\solutions\expandafter{\expandafter[\@subenumerateOption]}%
+      \EndSubQuestionstrue%
+      \StartSubQuestionsfalse
+    \fi
+  \fi
+  \updateStartIf
+  \ifStartQuestionsOrSubQuestions
     % Make sure to pass enumerate options to the solutions
-    \ifx\@enumerateOption\@empty \else%
-      \expandafter\g@addto@macro\expandafter\solutions\expandafter{\expandafter[\@enumerateOption]}%
-    \fi%
-    \EndQuestionstrue%
-  \fi%
-  \ifnum\value{nestedQuestions}>0
+    % \ifx\@enumerateOption\@empty \else%
+      % \expandafter\g@addto@macro\expandafter\solutions\expandafter{\expandafter[\@enumerateOption]}%
+    % \fi%
+  \fi
+
+  \updateEndIf
+  \ifEndQuestionsOrSubQuestions
     \g@addto@macro\solutions{\item #1}%
   \else%
     \g@addto@macro\solutions{#1}%
   \fi%
-  \StartQuestionsfalse%
   \ignorespaces%
 }
 
