@@ -116,11 +116,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Configuration
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\solutionsinlinename}{{\bf Solution.}\space}
-\newcommand{\solutionsinlinefont}{\small \itshape}
-\newcommand{\solutionsinlineendsymbol}{$\blacktriangle$}
+\newcommand{\solutionsanswerinlinename}{{\bf Solution.}\space}
+\newcommand{\solutionsanswerinlinefont}{\small \itshape}
+\newcommand{\solutionsanswerinlineendsymbol}{$\blacktriangle$}
 \newcommand{\solutionsatenddocumenttitle}{\noindent {\bf Solutions}}
 \newcommand{\solutionsanswerenvname}{Corrig\'e de l'exercice}
+\newcommand{\solutionsanswerfont}{\small}
 
 \newcommand{\solutionsexercisename}{Exercice}
 
@@ -144,16 +145,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifQedDone
 \def\trueendhere{%
-  \leavevmode\tag*{\solutionsinlineendsymbol}%
+  \leavevmode\tag*{\solutionsanswerinlineendsymbol}%
   \global\QedDonetrue
 }
 \long\def\truesolution#1{
   \QedDonefalse
-  \par\vskip10pt\noindent\solutionsinlinename{\solutionsinlinefont#1}%
+  \par\vskip10pt\noindent\solutionsanswerinlinename{\solutionsanswerinlinefont#1}%
   \ifQedDone
   \else
     \ignorespaces\unskip\penalty9999%
-    \hbox{}\nobreak\hfill\hbox{\solutionsinlineendsymbol}
+    \hbox{}\nobreak\hfill\hbox{\solutionsanswerinlineendsymbol}
   \fi
   \par\vskip10pt
 }
@@ -316,9 +317,9 @@
 
   \updateEndIf
   \ifEndQuestionsOrSubQuestions
-    \g@addto@macro\solutions{\item #1}%
+    \g@addto@macro\solutions{\item {\solutionsanswerfont #1}}%
   \else%
-    \g@addto@macro\solutions{#1}%
+    \g@addto@macro\solutions{{\solutionsanswerfont #1}}%
   \fi%
   \ignorespaces%
 }
