@@ -92,7 +92,6 @@ It is possible to group the solutions to all sub questions in a single one
 \end{exercise}
 ```
 
-
 ## Customizing the layout
 
 Here is a list of `tex` variables, which can be redefined with `\renewcommand` to modify the layout
@@ -105,6 +104,6 @@ Here is a list of `tex` variables, which can be redefined with `\renewcommand` t
 
 - `\solutionsanswerenvname`: The title of the solution of each exercise in `after` or `separate` modes. Default value is `Corrig\'e de l'exercice`.
 
-- `\solutionsanswerinlinefont`: The font used to typeset solutions in `after` and `separate` modes. Default value is `\small`.
+- `\solutionsanswerfont`: The font used to typeset solutions in `after` and `separate` modes. Default value is `\small`.
 
 - `\solutionsexercisename`: The title of the exercise environment. Default value is `Exercice`.
