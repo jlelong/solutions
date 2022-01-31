@@ -4,7 +4,7 @@ This a LaTeX package to typeset exercises and their solutions.
 
 ## Typical usage
 
-Just include the package as with any other package.
+Include the package
 
 ```tex
 \usepackage[options]{solutions}
