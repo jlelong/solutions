@@ -2,6 +2,8 @@
 
 This a LaTeX package to typeset exercises and their solutions.
 
+Written by Jerome Lelong <jerome.lelong@gmail.com> and distributed under the terms of the [LPPL Version 1.3c](https://ctan.org/license/lppl1.3c).
+
 ## Typical usage
 
 Include the package
